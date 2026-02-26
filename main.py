@@ -5,7 +5,7 @@ import time
 from datetime import datetime, timezone, timedelta
 from telethon import TelegramClient, events, errors
 
-# Environment variables se credentials lena (Railway par set karein)
+# Environment variables se credentials lena (Railway/Koyeb par set karein)
 API_ID = int(os.getenv("API_ID"))
 API_HASH = os.getenv("API_HASH")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
@@ -196,7 +196,19 @@ async def handler(event):
     text = event.raw_text.lower().strip()
     chat_id = event.chat_id
 
-    if text == "/neet":
+    if text == "/start":
+        await event.respond(
+            "👋 **Welcome to NEET 2026 Countdown Bot!**\n\n"
+            "This bot shows a live countdown to NEET 2026 (3rd May) with motivational quotes.\n\n"
+            "**Commands:**\n"
+            "/neet - Start the countdown in this chat\n"
+            "/stop - Stop the countdown in this chat\n\n"
+            "The countdown updates every 5 seconds and changes quotes every 30 seconds.\n"
+            "Good luck with your preparation! 🩺✨\n\n"
+            "💞 **Developer:** @ll_VIPIN_ll"
+        )
+
+    elif text == "/neet":
         if str(chat_id) in active_sessions and active_sessions[str(chat_id)]["active"]:
             await event.respond("⚠️ Countdown already running in this chat!")
             return
@@ -232,7 +244,7 @@ async def main():
     await client.start(bot_token=BOT_TOKEN)
     me = await client.get_me()
     print(f"✅ Bot logged in as: @{me.username}")
-    print("🚀 Bot Active – Commands: /neet , /stop")
+    print("🚀 Bot Active – Commands: /neet , /stop , /start")
     print("🔄 Resuming previous countdowns...")
     await resume_all_countdowns()
     await client.run_until_disconnected()

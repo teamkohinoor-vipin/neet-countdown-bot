@@ -4,7 +4,7 @@ import os
 import time
 import sys
 from datetime import datetime, timezone, timedelta
-from telethon import TelegramClient, events, errors
+from telethon import TelegramClient, events, errors, Button
 
 # ================= ENV VARIABLES =================
 API_ID = os.getenv("API_ID")
@@ -200,15 +200,22 @@ async def handler(event):
     chat_id = event.chat_id
 
     if text == "/start":
+        # Get bot username to create add link
+        me = await client.get_me()
+        bot_username = me.username
+        add_url = f"https://t.me/{bot_username}?startgroup=start"
+
         await event.respond(
             "👋 **Welcome to NEET 2026 Countdown Bot!**\n\n"
             "This bot shows a live countdown to NEET 2026 (3rd May) with motivational quotes.\n\n"
-            "**Commands:**\n"
-            "/neet - Start the countdown in this chat\n"
-            "/stop - Stop the countdown in this chat\n\n"
+            "**How to use in groups/channels:**\n"
+            "1. Add this bot to your group or channel.\n"
+            "2. In the group/channel, send `/neet` to start countdown.\n"
+            "3. Send `/stop` to stop countdown.\n\n"
             "Updates every second, quotes change every 30 seconds.\n"
             "Good luck with your preparation! 🩺✨\n\n"
-            "💞 **Developer:** @ll_VIPIN_ll"
+            "💞 **Developer:** @ll_VIPIN_ll",
+            buttons=[Button.url("➕ Add to Group/Channel", add_url)]
         )
 
     elif text == "/neet":

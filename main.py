@@ -24,8 +24,66 @@ SESSION_FILE = "/tmp/neet_sessions.json"
 IST = timezone(timedelta(hours=5, minutes=30))
 TARGET = datetime(2026, 5, 3, 0, 0, 0, tzinfo=IST)
 
-# ================= 50+ QUOTES =================
-QUOTES = [ ... ]  # (poori list yahan paste karo)
+# ================= 50+ MOTIVATIONAL QUOTES =================
+QUOTES = [
+    "✨ Dreams don't work unless you do.",
+    "🩺 A doctor's biggest miracle is perseverance.",
+    "📚 One step at a time – NEET is just a milestone.",
+    "💪 Your future patients are waiting for you.",
+    "🌟 Consistency beats intensity.",
+    "🧠 Train your mind like you train your muscles.",
+    "🎯 Focus on the goal, not the obstacles.",
+    "💊 Every page you read brings you closer.",
+    "⚡ Success is the sum of small efforts, repeated.",
+    "🎓 The white coat is waiting for you.",
+    "🕯️ Be the light in someone's life – study on.",
+    "🌅 Today's hard work is tomorrow's reward.",
+    "🩻 A NEET rank is just a number; knowledge is forever.",
+    "📖 Read like your life depends on it – because someone's will.",
+    "🏥 The world needs more dedicated doctors. Be one.",
+    "⏳ Time is precious – use every second wisely.",
+    "💧 Little strokes fell great oaks.",
+    "🌱 Plant the seeds of knowledge now, harvest success later.",
+    "🚀 You are closer than you think.",
+    "💡 Every mistake is a lesson in disguise.",
+    "🛡️ Protect your study time like a treasure.",
+    "💞 Believe in yourself as much as we believe in you.",
+    "🔬 Science is magic that works – master it.",
+    "⚕️ Heal the world, starting with your own determination.",
+    "🌠 Shoot for the moon; even if you miss, you'll land among stars.",
+    "🧘 Calm mind, focused study, bright future.",
+    "📅 Days are numbered – make each one count.",
+    "🏆 Rank is temporary, knowledge is permanent.",
+    "💎 You are a diamond in the making.",
+    "🌻 Stay positive, work hard, make it happen.",
+    "🕊️ Let your dreams fly higher than the marks.",
+    "💪 No pressure, no diamond.",
+    "⚡ Wake up with determination, go to bed with satisfaction.",
+    "🩺 Future doctor: your journey inspires us all.",
+    "🧪 Every experiment begins with a single step.",
+    "📝 Your notes today are your patient's history tomorrow.",
+    "🫀 A doctor's heart beats for others.",
+    "🧬 DNA of success: Dedication, Never giving up, Action.",
+    "🏅 You're not just preparing for an exam, you're preparing for a calling.",
+    "🌙 Late nights now will save lives later.",
+    "☕ Chai aur NCERT – perfect combination!",
+    "👨‍⚕️👩‍⚕️ Future MBBS student: that's you!",
+    "📖 Every chapter mastered is a life saved.",
+    "💉 Stay sharp, stay focused.",
+    "🏥 From NEET to OPD – you'll get there.",
+    "🧘‍♂️ Breathe, believe, achieve.",
+    "🎯 Your target: 720/720. Your weapon: hard work.",
+    "🛤️ The road is long, but the destination is worth it.",
+    "🌟 Shine bright like a topper.",
+    "📚 Books are your best friends right now.",
+    "💤 Sleep is important, but so is your dream.",
+    "🔥 Burn the midnight oil, but don't burn out.",
+    "🎉 Celebrate small victories – every topic mastered is a win.",
+    "🤝 You're not alone – millions are on this journey with you.",
+    "🌈 After the rain comes the rainbow – after NEET comes MBBS.",
+    "⏰ Every second counts, every mark matters.",
+    "💯 Be the 1% who never gives up.",
+]
 
 # ================= SESSION HANDLING =================
 def load_sessions():
@@ -64,7 +122,6 @@ async def resume_all_countdowns():
 # ================= COUNTDOWN FUNCTION =================
 async def run_countdown(chat_id, message_id, resume=False):
     if resume:
-        # Resume hote hi last_quote track reset karo
         active_sessions[str(chat_id)]["last_quote"] = time.monotonic()
         active_sessions[str(chat_id)]["quote_index"] = 0
         save_sessions(active_sessions)
@@ -92,7 +149,7 @@ async def run_countdown(chat_id, message_id, resume=False):
         hours, rem = divmod(remaining.seconds, 3600)
         minutes, seconds = divmod(rem, 60)
 
-        # Quote rotate every 30 seconds
+        # Change quote every 30 seconds
         if loop_start - session["last_quote"] >= 30:
             session["quote_index"] = (session["quote_index"] + 1) % len(QUOTES)
             session["last_quote"] = loop_start
@@ -119,16 +176,16 @@ async def run_countdown(chat_id, message_id, resume=False):
                 await asyncio.sleep(e.seconds)
             except Exception as e:
                 if attempt == retries - 1:
-                    print(f"⚠️ Edit failed: {e}")
+                    print(f"⚠️ Permanent edit failed in chat {chat_id}: {e}")
                     active_sessions.pop(str(chat_id), None)
                     save_sessions(active_sessions)
                     return
                 await asyncio.sleep(1)
 
         elapsed = time.monotonic() - loop_start
-        await asyncio.sleep(max(0, 1.0 - elapsed))  # 1 second update
+        await asyncio.sleep(max(0, 1.0 - elapsed))  # 1-second update
 
-    # Cleanup
+    # Clean up if loop ended
     if str(chat_id) in active_sessions and not active_sessions[str(chat_id)]["active"]:
         del active_sessions[str(chat_id)]
         save_sessions(active_sessions)
@@ -147,8 +204,8 @@ async def handler(event):
             "👋 **Welcome to NEET 2026 Countdown Bot!**\n\n"
             "This bot shows a live countdown to NEET 2026 (3rd May) with motivational quotes.\n\n"
             "**Commands:**\n"
-            "/neet - Start the countdown\n"
-            "/stop - Stop the countdown\n\n"
+            "/neet - Start the countdown in this chat\n"
+            "/stop - Stop the countdown in this chat\n\n"
             "Updates every second, quotes change every 30 seconds.\n"
             "Good luck with your preparation! 🩺✨\n\n"
             "💞 **Developer:** @ll_VIPIN_ll"
@@ -196,7 +253,7 @@ async def main():
         await resume_all_countdowns()
         await client.run_until_disconnected()
     except Exception as e:
-        print(f"❌ Fatal error: {e}")
+        print(f"❌ Fatal error in main: {e}")
         sys.exit(1)
 
 if __name__ == "__main__":
